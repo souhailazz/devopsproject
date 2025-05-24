@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'springboot-app'
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean package'
+    options: '--no-transfer-progress'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.17'  # Java 23 is not yet supported natively
+    mavenVersionOption: 'Default'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'dockerhubServiceConnection'  # See Step 2
+    repository: '$(DOCKER_USERNAME)/$(imageName)'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      latest
