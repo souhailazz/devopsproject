@@ -7,7 +7,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'springboot-app'
+  imageName: 'medical-appointment-backend'
+  dockerUsername: 'souhailazz'
 
 steps:
   - task: Maven@3
@@ -22,7 +23,7 @@ steps:
   - task: Docker@2
     inputs:
       containerRegistry: 'dockerhubServiceConnection'  # Ensure this matches your Azure service connection name
-      repository: '$(DOCKER_USERNAME)/$(imageName)'
+      repository: '$(dockerUsername)/$(imageName)'
       command: 'buildAndPush'
       Dockerfile: 'backend/Dockerfile'  # Adjust this path to where your Dockerfile is
       tags: |
