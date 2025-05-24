@@ -18,6 +18,10 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.17'  # Java 23 is not yet supported natively
     mavenVersionOption: 'Default'
+- task: UseJavaVersion@1
+  inputs:
+    versionSpec: '21'
+    jdkArchitecture: 'x64'
 
 - task: Docker@2
   inputs:
