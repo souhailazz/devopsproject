@@ -10,24 +10,20 @@ variables:
   imageName: 'springboot-app'
 
 steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'backend/pom.xml'
-    goals: 'clean package'
-    options: '--no-transfer-progress'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.17'  # Java 23 is not yet supported natively
-    mavenVersionOption: 'Default'
-- task: UseJavaVersion@1
-  inputs:
-    versionSpec: '21'
-    jdkArchitecture: 'x64'
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'backend/pom.xml'  # Adjust if needed
+      goals: 'clean package'
+      options: '--no-transfer-progress'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.21'  # Use 1.21 for Java 21
+      mavenVersionOption: 'Default'
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'dockerhubServiceConnection'  # See Step 2
-    repository: '$(DOCKER_USERNAME)/$(imageName)'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    tags: |
-      latest
+  - task: Docker@2
+    inputs:
+      containerRegistry: 'dockerhubServiceConnection'  # Ensure this matches your Azure service connection name
+      repository: '$(DOCKER_USERNAME)/$(imageName)'
+      command: 'buildAndPush'
+      Dockerfile: 'backend/Dockerfile'  # Adjust this path to where your Dockerfile is
+      tags: |
+        latest
