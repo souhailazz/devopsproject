@@ -9,7 +9,7 @@ const MyConsultation = () => {
   const [consultations, setConsultations] = useState([]);
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('Pending');
+  const [activeTab, setActiveTab] = useState('PENDING');
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -282,9 +282,10 @@ const MyConsultation = () => {
   };
   const filteredConsultations = Array.isArray(consultations) 
     ? consultations.filter((consultation) => {
-        if (activeTab === 'Pending') return consultation.status === 'pending' || !consultation.status;
-        if (activeTab === 'Accepted') return consultation.status === 'accepted';
-        if (activeTab === 'Completed') return consultation.status === 'completed';
+        if (activeTab === 'PENDING') return consultation.etat === 'PENDING' || !consultation.etat;
+        if (activeTab === 'ACCEPTED') return consultation.etat === 'ACCEPTED';
+        if (activeTab === 'COMPLETED') return consultation.etat === 'COMPLETED';
+        if (activeTab === 'DENIED') return consultation.etat === 'DENIED';
         return true;
       })
     : [];
@@ -342,13 +343,13 @@ const MyConsultation = () => {
           {/* Consultation List */}
           <div className="consultations-list-container">
             <div className="tabs">
-              {['Pending', 'Accepted', 'Completed'].map((tab) => (
+              {['PENDING', 'ACCEPTED', 'COMPLETED', 'DENIED'].map((tab) => (
                 <button
                   key={tab}
                   className={`tab ${activeTab === tab ? 'active' : ''}`}
                   onClick={() => setActiveTab(tab)}
                 >
-                  {tab}
+                  {tab.charAt(0) + tab.slice(1).toLowerCase()}
                 </button>
               ))}
             </div>
@@ -385,7 +386,7 @@ const MyConsultation = () => {
                         <span>{formatTime(consultation.dateConsultation)}</span>
                       </div>
                     </div>
-                    <div className="status-badge">{consultation.status || 'pending'}</div>
+                    <div className="status-badge">{consultation.etat || 'PENDING'}</div>
                   </div>
                 ))
               )}
@@ -421,12 +422,12 @@ const MyConsultation = () => {
                   </p>
                 </div>
                 <div className="appointment-status">
-                  Status: <span className="status">{selectedConsultation.status || 'pending'}</span>
+                  Status: <span className="status">{selectedConsultation.etat || 'PENDING'}</span>
                 </div>
               </div>
 
               {/* Debug: Show if video call URL exists */}
-              {selectedConsultation.videoCallLink && (
+              {selectedConsultation.videoCallLink && selectedConsultation.etat === 'ACCEPTED' && (
                 <div className="video-call-section">
                   <div className="video-call-header">
                     <Video size={20} />
@@ -519,8 +520,6 @@ const MyConsultation = () => {
                 </div>
               )}
 
-             
-
               {userType === 'doctor' && (
                 <div className="medical-notes">
                   <h4>Medical Notes</h4>
@@ -534,7 +533,7 @@ const MyConsultation = () => {
                     <MessageSquare size={18} />
                     <span>Messages</span>
                   </div>
-                  {userType === 'docteur' && (
+                  {userType === 'docteur' && selectedConsultation.etat === 'ACCEPTED' && (
                     <button 
                       className="edit-ordonnance-btn"
                       onClick={() => setShowOrdonnanceEditor(true)}
@@ -559,7 +558,7 @@ const MyConsultation = () => {
                         <div className="loading-ordonnance">
                           <p>Loading ordonnance...</p>
                         </div>
-                      ) : editingOrdonnanceId === selectedConsultation.id && userType === 'docteur' ? (
+                      ) : editingOrdonnanceId === selectedConsultation.id && userType === 'docteur' && selectedConsultation.etat === 'ACCEPTED' ? (
                         <div className="ordonnance-editor">
                           <textarea
                             value={ordonnanceContent}
@@ -621,7 +620,7 @@ const MyConsultation = () => {
 
                 <div className="chat-messages">
                   {messages.length === 0 ? (
-                    <p className="no-messages">No messages yet. Start the conversation.</p>
+                    <p className="no-messages">No messages </p>
                   ) : (
                     messages.map((msg, index) => {
                       const isFromMe = isMessageFromCurrentUser(msg);
@@ -648,18 +647,20 @@ const MyConsultation = () => {
                   )}
                 </div>
 
-                <div className="chat-input">
-                  <input
-                    type="text"
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  />
-                  <button className="btn-send" onClick={handleSendMessage}>
-                    Send
-                  </button>
-                </div>
+                {selectedConsultation.etat === 'ACCEPTED' && (
+                  <div className="chat-input">
+                    <input
+                      type="text"
+                      placeholder="Type your message..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    />
+                    <button className="btn-send" onClick={handleSendMessage}>
+                      Send
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}

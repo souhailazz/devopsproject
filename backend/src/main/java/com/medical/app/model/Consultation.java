@@ -25,22 +25,35 @@ public class Consultation {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "etat")
+    private ConsultationEtat etat = ConsultationEtat.PENDING;
+
     @PrePersist
-      protected void onCreate() {
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-      
     }
-      @Column(name = "video_call_link")
-private String videoCallLink;
+
+    @Column(name = "video_call_link")
+    private String videoCallLink;
       
     // Getters & Setters
-      public String getVideoCallLink() {
-    return videoCallLink;
-}
+    public ConsultationEtat getEtat() {
+        return etat;
+    }
 
-public void setVideoCallLink(String videoCallLink) {
-    this.videoCallLink = videoCallLink;
-}
+    public void setEtat(ConsultationEtat etat) {
+        this.etat = etat;
+    }
+
+    public String getVideoCallLink() {
+        return videoCallLink;
+    }
+
+    public void setVideoCallLink(String videoCallLink) {
+        this.videoCallLink = videoCallLink;
+    }
+
     public Long getId() {
         return id;
     }
