@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Star, MapPin, Building, Phone, Calendar, ArrowLeft } from "lucide-react";
+import DoctorMap from "../DoctorMap/DoctorMap";
 import "./ResponseSearch.css";
 
 export default function ResponseSearch() {
@@ -192,16 +193,18 @@ export default function ResponseSearch() {
               ))}
             </div>
             <div className="map-container">
-              {doctors[0]?.latitude && doctors[0]?.longitude ? (
-                <div className="map-placeholder">
-                  <h3>Map View</h3>
-                  <p>Showing {doctors.length} doctors in {city || doctors[0].city || "Morocco"}</p>
-                  {/* Future integration with Leaflet/Google Maps */}
-                </div>
+              {doctors.length > 0 ? (
+                <DoctorMap 
+                  doctors={doctors}
+                  onDoctorSelect={(doctor) => {
+                    // Optional: Handle doctor selection from map
+                    console.log('Selected doctor from map:', doctor);
+                  }}
+                />
               ) : (
                 <div className="map-placeholder">
                   <h3>Map View</h3>
-                  <p>Location data not available</p>
+                  <p>No doctors found to display on map</p>
                 </div>
               )}
             </div>
